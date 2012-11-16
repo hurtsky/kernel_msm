@@ -3052,6 +3052,12 @@ config HAS_MACH_MEMUTILS
 	help
 	Faster memcpy performance for Krait
 
+config MMI_RAM_INFO
+	depends on ARCH_MSM
+	default n
+	bool "Motorola Mobility RAM Info"
+	help
+	Provide mechanism to access RAM size and MR registers values via sysfs.
 endif
 
 config KERNEL_TEXT_MPU_PROT
