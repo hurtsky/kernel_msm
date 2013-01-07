@@ -2188,6 +2188,11 @@ failed:
 	return ret;
 }
 
+static int virtual_sensor0 = -EINVAL;
+static int virtual_sensor1 = -EINVAL;
+module_param(virtual_sensor0, int, 0644);
+module_param(virtual_sensor1, int, 0644);
+
 int msm_thermal_pre_init(void)
 {
 	int ret = 0;
