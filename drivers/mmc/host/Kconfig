@@ -486,7 +486,8 @@ config MMC_MSM
 	depends on MMC && ARCH_MSM
 	help
 	  This provides support for the SD/MMC cell found in the
-          MSM and QSD SOCs from Qualcomm.
+	  MSM and QSD SOCs from Qualcomm. The controller also has
+	  support for SDIO devices.
 
 config MMC_MSM_SDC1_SUPPORT
 	boolean "Qualcomm SDC1 support"
