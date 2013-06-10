@@ -3413,6 +3413,7 @@ static void msm_otg_set_vbus_state(int online)
 	}
 }
 
+static int factory_kill_gpio;
 static int factory_cable;
 static int msm_pmic_is_factory_cable(struct msm_otg *motg)
 {
@@ -3450,10 +3451,16 @@ static void msm_pmic_id_status_w(struct work_struct *w)
 		factory_cable = 1;
 	} else
 		if (factory_cable) {
-			pr_info("Factory Cable Detached!,"
-					" 2 sec to power off.\n");
-			kernel_halt();
-			return;
+			pr_info("Factory Cable Detached!\n");
+			if (factory_kill_gpio &&
+				!gpio_get_value(factory_kill_gpio)) {
+				factory_cable = 0;
+				pr_info("Factory Kill Disabled!\n");
+			} else {
+				pr_info("2 sec to power off.\n");
+				kernel_halt();
+				return;
+			}
 		}
 
 	if (id_gnd || !id_flt) {
@@ -4468,6 +4475,27 @@ struct msm_otg_platform_data *msm_otg_dt_to_pdata(struct platform_device *pdev)
 	return pdata;
 }
 
+static void __init msm_otg_get_factory_kill_gpio(void)
+{
+	struct device_node *n = NULL;
+	int i, gpio_count;
+	struct gpio gpio;
+
+	n = of_find_compatible_node(n, NULL, "mmi,factory-support-msm8960");
+	if (!n)
+		return;
+	gpio_count = of_gpio_count(n);
+	for (i = 0; i < gpio_count; i++) {
+		gpio.gpio = of_get_gpio(n, i);
+		of_property_read_string_index(n, "gpio-names", i, &gpio.label);
+		if (!strcmp(gpio.label, "factory_kill_disable")) {
+			factory_kill_gpio = gpio.gpio;
+			break;
+		}
+	}
+	of_node_put(n);
+}
+
 static int __init msm_otg_probe(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -4892,6 +4920,7 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 
 	motg->pm_notify.notifier_call = msm_otg_pm_notify;
 	factory_cable = msm_pmic_is_factory_cable(motg);
+	msm_otg_get_factory_kill_gpio();
 	register_pm_notifier(&motg->pm_notify);
 	return 0;
 
