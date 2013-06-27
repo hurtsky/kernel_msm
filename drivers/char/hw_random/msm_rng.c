@@ -411,7 +411,7 @@ static int __devinit msm_rng_probe(struct platform_device *pdev)
 		goto err_exit;
 	}
 
-	msm_rng_dev = kzalloc(sizeof(struct msm_rng_device), GFP_KERNEL);
+	msm_rng_dev = kzalloc(sizeof(struct *msm_rng_device), GFP_KERNEL);
 	if (!msm_rng_dev) {
 		dev_err(&pdev->dev, "cannot allocate memory\n");
 		error = -ENOMEM;
