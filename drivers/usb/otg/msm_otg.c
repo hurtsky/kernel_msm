@@ -103,6 +103,8 @@ static struct msm_otg *the_msm_otg;
 static bool debug_aca_enabled;
 static bool debug_bus_voting_enabled;
 static bool mhl_det_in_progress;
+static int factory_kill_gpio;
+static int factory_cable;
 
 static struct regulator *hsusb_3p3;
 static struct regulator *hsusb_1p8;
@@ -1640,7 +1642,7 @@ static int msm_otg_set_host(struct usb_otg *otg, struct usb_bus *host)
 		return -ENODEV;
 	}
 
-	if (!motg->pdata->vbus_power && host) {
+	if (!factory_cable && !motg->pdata->vbus_power && host) {
 		vbus_otg = devm_regulator_get(motg->phy.dev, "vbus_otg");
 		if (IS_ERR(vbus_otg)) {
 			pr_err("Unable to get vbus_otg\n");
@@ -3423,8 +3425,6 @@ static void msm_otg_set_vbus_state(int online)
 	}
 }
 
-static int factory_kill_gpio;
-static int factory_cable;
 static int msm_pmic_is_factory_cable(struct msm_otg *motg)
 {
 	int id_gnd = 0;
@@ -3440,6 +3440,18 @@ static int msm_pmic_is_factory_cable(struct msm_otg *motg)
 	if (!id_gnd && !id_flt)
 		return 1;
 	return 0;
+}
+
+static bool  msm_pmic_mmi_factory_mode(void)
+{
+	struct device_node *np = of_find_node_by_path("/chosen");
+	bool factory = false;
+
+	if (np)
+		factory = of_property_read_bool(np, "mmi,factory-cable");
+
+	of_node_put(np);
+	return factory;
 }
 
 static void msm_pmic_id_status_w(struct work_struct *w)
@@ -4928,9 +4940,11 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 	if (ret)
 		dev_dbg(&pdev->dev, "fail to setup cdev\n");
 
-	motg->pm_notify.notifier_call = msm_otg_pm_notify;
-	factory_cable = msm_pmic_is_factory_cable(motg);
+	factory_cable = msm_pmic_mmi_factory_mode() ||
+				msm_pmic_is_factory_cable(motg);
 	msm_otg_get_factory_kill_gpio();
+
+	motg->pm_notify.notifier_call = msm_otg_pm_notify;
 	register_pm_notifier(&motg->pm_notify);
 	return 0;
 
