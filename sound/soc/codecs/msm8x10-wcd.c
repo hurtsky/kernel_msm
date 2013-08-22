@@ -2819,6 +2819,7 @@ static int msm8x10_wcd_enable_ext_mb_source(struct snd_soc_codec *codec,
 	return ret;
 }
 
+#ifndef CONFIG_SND_SOC_TPA6165A2
 static int msm8x10_wcd_enable_mbhc_micbias(struct snd_soc_codec *codec,
 					   bool enable,
 					   enum wcd9xxx_micbias_num micb_num)
@@ -2848,6 +2849,7 @@ err:
 			enable ? "enable" : "disable");
 	return rc;
 }
+#endif
 
 static void msm8x10_wcd_micb_internal(struct snd_soc_codec *codec, bool on)
 {
@@ -3336,6 +3338,7 @@ static int msm8x10_wcd_codec_probe(struct snd_soc_codec *codec)
 
 	msm8x10_wcd_priv->micb_en_count = 0;
 
+#ifndef CONFIG_SND_SOC_TPA6165A2
 	ret = wcd9xxx_mbhc_init(&msm8x10_wcd_priv->mbhc,
 				&msm8x10_wcd_priv->resmgr,
 				codec, msm8x10_wcd_enable_mbhc_micbias,
@@ -3346,6 +3349,7 @@ static int msm8x10_wcd_codec_probe(struct snd_soc_codec *codec)
 			__func__);
 		goto exit_probe;
 	}
+#endif
 
 	/* Handle the Pdata */
 	ret = msm8x10_wcd_handle_pdata(codec, pdata);
