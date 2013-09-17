@@ -554,7 +554,7 @@ periph_interrupt(struct spmi_pmic_arb_dev *pmic_arb, u8 apid, bool show)
 		dev_err(pmic_arb->dev,
 		"periph_interrupt(apid:0x%x sid:0x%x pid:0x%x) unknown peripheral\n",
 			apid, sid, pid);
-		/* return IRQ_NONE; */
+		return IRQ_NONE;
 	}
 
 	status = readl_relaxed(intr + SPMI_PIC_ACC_ENABLE(apid));
