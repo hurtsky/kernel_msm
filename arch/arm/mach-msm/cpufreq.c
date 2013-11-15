@@ -34,8 +34,6 @@
 #include <mach/socinfo.h>
 #include <mach/cpufreq.h>
 
-#include "acpuclock.h"
-
 #ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -50,7 +48,6 @@ static unsigned int freq_index[NR_CPUS];
 static unsigned int max_freq_index;
 static struct cpufreq_frequency_table *freq_table;
 static unsigned int *l2_khz;
-static bool is_clk;
 static bool is_sync;
 static unsigned long *mem_bw;
 
@@ -116,6 +113,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	int saved_sched_rt_prio = -EINVAL;
 	struct cpufreq_freqs freqs;
 	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
+	unsigned long rate;
 
 	freqs.old = policy->cur;
 	freqs.new = new_freq;
@@ -123,7 +121,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 
 	/*
 	 * Put the caller into SCHED_FIFO priority to avoid cpu starvation
-	 * in the acpuclk_set_rate path while increasing frequencies
+	 * while increasing frequencies
 	 */
 
 	if (freqs.new > freqs.old && current->policy != SCHED_FIFO) {
@@ -135,6 +133,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
 
 	trace_cpu_frequency_switch_start(freqs.old, freqs.new, policy->cpu);
+<<<<<<< HEAD
 	if (is_clk) {
 		if (cpu_clk[policy->cpu]) {
 			unsigned long rate = new_freq * 1000;
@@ -147,6 +146,14 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 		}
 	} else {
 		ret = acpuclk_set_rate(policy->cpu, new_freq, SETRATE_CPUFREQ);
+=======
+	rate = new_freq * 1000;
+	rate = clk_round_rate(cpu_clk[policy->cpu], rate);
+	ret = clk_set_rate(cpu_clk[policy->cpu], rate);
+	if (!ret) {
+		freq_index[policy->cpu] = index;
+		update_l2_bw(NULL);
+>>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 	}
 
 	if (!ret) {
@@ -230,6 +237,7 @@ static int msm_cpufreq_verify(struct cpufreq_policy *policy)
 
 static unsigned int msm_cpufreq_get_freq(unsigned int cpu)
 {
+<<<<<<< HEAD
 	if (is_clk && is_sync)
 		cpu = 0;
 
@@ -241,6 +249,9 @@ static unsigned int msm_cpufreq_get_freq(unsigned int cpu)
 	}
 
 	return acpuclk_get_rate(cpu);
+=======
+	return clk_get_rate(cpu_clk[cpu]) / 1000;
+>>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 }
 
 static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
@@ -260,7 +271,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	 * same frequency. Hence set the cpumask to all cpu.
 	 */
 	if (cpu_is_msm8625() || cpu_is_msm8625q() || cpu_is_msm8226()
-		|| cpu_is_msm8610() || (is_clk && is_sync))
+		|| cpu_is_msm8610() || is_sync)
 		cpumask_setall(policy->cpus);
 
 	cpu_work = &per_cpu(cpufreq_work, policy->cpu);
@@ -268,7 +279,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	init_completion(&cpu_work->complete);
 
 	/* synchronous cpus share the same policy */
-	if (is_clk && !cpu_clk[policy->cpu])
+	if (!cpu_clk[policy->cpu])
 		return 0;
 
 	if (cpufreq_frequency_table_cpuinfo(policy, table)) {
@@ -282,7 +293,11 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
 #endif
 
+<<<<<<< HEAD
 	cur_freq = msm_cpufreq_get_freq(policy->cpu);
+=======
+	cur_freq = clk_get_rate(cpu_clk[policy->cpu])/1000;
+>>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 
 	if (cpufreq_frequency_table_target(policy, table, cur_freq,
 	    CPUFREQ_RELATION_H, &index) &&
@@ -302,9 +317,6 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	pr_debug("cpufreq: cpu%d init at %d switching to %d\n",
 			policy->cpu, cur_freq, table[index].frequency);
 	policy->cur = table[index].frequency;
-
-	policy->cpuinfo.transition_latency =
-		acpuclk_get_switch_time() * NSEC_PER_USEC;
 
 	return 0;
 }
@@ -332,13 +344,12 @@ static int __cpuinit msm_cpufreq_cpu_callback(struct notifier_block *nfb,
 	 * before the CPU is brought up.
 	 */
 	case CPU_DEAD:
-		if (is_clk) {
-			clk_disable_unprepare(cpu_clk[cpu]);
-			clk_disable_unprepare(l2_clk);
-			update_l2_bw(NULL);
-		}
+		clk_disable_unprepare(cpu_clk[cpu]);
+		clk_disable_unprepare(l2_clk);
+		update_l2_bw(NULL);
 		break;
 	case CPU_UP_CANCELED:
+<<<<<<< HEAD
 		if (is_clk && cpu_clk[cpu]) {
 			clk_unprepare(cpu_clk[cpu]);
 			clk_unprepare(l2_clk);
@@ -355,16 +366,29 @@ static int __cpuinit msm_cpufreq_cpu_callback(struct notifier_block *nfb,
 				return NOTIFY_BAD;
 			update_l2_bw(&cpu);
 		}
+=======
+		clk_unprepare(cpu_clk[cpu]);
+		clk_unprepare(l2_clk);
+		update_l2_bw(NULL);
+		break;
+	case CPU_UP_PREPARE:
+		rc = clk_prepare(l2_clk);
+		if (rc < 0)
+			return NOTIFY_BAD;
+		rc = clk_prepare(cpu_clk[cpu]);
+		if (rc < 0)
+			return NOTIFY_BAD;
+		update_l2_bw(&cpu);
+>>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 		break;
 	case CPU_STARTING:
-		if (is_clk) {
-			rc = clk_enable(l2_clk);
-			if (rc < 0)
-				return NOTIFY_BAD;
-			rc = clk_enable(cpu_clk[cpu]);
-			if (rc < 0)
-				return NOTIFY_BAD;
-		}
+		rc = clk_enable(l2_clk);
+		if (rc < 0)
+			return NOTIFY_BAD;
+		rc = clk_enable(cpu_clk[cpu]);
+		if (rc < 0)
+			return NOTIFY_BAD;
+
 		break;
 	default:
 		break;
@@ -588,8 +612,6 @@ static int __init msm_cpufreq_probe(struct platform_device *pdev)
 		pr_err("devfreq governor registration failed\n");
 		return ret;
 	}
-
-	is_clk = true;
 
 #ifdef CONFIG_DEBUG_FS
 	if (!debugfs_create_file("msm_cpufreq", S_IRUGO, NULL, NULL,
