@@ -426,7 +426,7 @@ struct mmc_card {
 	unsigned int		idle_timeout;
 	struct notifier_block        reboot_notify;
 	enum mmc_pon_type pon_type;
-	u8 *cached_ext_csd;
+	struct mmc_ext_csd	cached_ext_csd;
 
 #define MMC_ERROR_FAILURE_RATIO	10		/* give up on cards with too many failures/successes */
 #define MMC_ERROR_FORGIVE_RATIO	10		/* forgive cards with enough successes/failures */
