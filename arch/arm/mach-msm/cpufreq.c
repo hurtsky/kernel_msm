@@ -154,10 +154,13 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	if (!ret) {
 		freq_index[policy->cpu] = index;
 		update_l2_bw(NULL);
+<<<<<<< HEAD
 >>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 	}
 
 	if (!ret) {
+=======
+>>>>>>> 5e683fe... msm: cpufreq: Remove redundant check in cpu_set_freq
 		trace_cpu_frequency_switch_end(policy->cpu);
 		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 	}
