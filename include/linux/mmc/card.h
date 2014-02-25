@@ -403,6 +403,9 @@ struct mmc_card {
 	enum mmc_pon_type pon_type;
 	u8 *cached_ext_csd;
 
+	unsigned long long	requests;	/* cumulative number of requests */
+	unsigned long long	request_errors;	/* cumulative number of request errors */
+
 #define MMC_ERROR_FAILURE_RATIO	10		/* give up on cards with too many failures/successes */
 #define MMC_ERROR_FORGIVE_RATIO	10		/* forgive cards with enough successes/failures */
 	unsigned int		failures;	/* number of recent request failures */
