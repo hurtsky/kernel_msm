@@ -117,6 +117,8 @@ Parent node optional properties:
                                         charge at a reduced rate.
  - qcom,step-charge-current             Reduced charge rate for High Voltage batteries
                                         which are above a certain Voltage threshold
+ - qcom,step-charge-soc                 SOC threshold for High Voltage batteries to
+                                        charge at a reduced rate.
 
 Sub node required structure:
 - A qcom,chg node must be a child of an SPMI node that has specified
