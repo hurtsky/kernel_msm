@@ -353,6 +353,9 @@ struct mdss_dsi_ctrl_pdata {
 	struct dsi_panel_cmds hbm_off_cmds;
 	u32 hbm_on_brts;
 	u32 hbm_off_brts;
+
+	int mipi_d0_sel;
+	bool partial_mode_enabled;
 };
 
 struct dsi_status_data {

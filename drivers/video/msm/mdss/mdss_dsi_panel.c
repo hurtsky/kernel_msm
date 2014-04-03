@@ -568,12 +568,33 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 				panel_data);
 	mipi  = &pdata->panel_info.mipi;
 
-	pr_debug("%s+: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
+	pr_info("%s+: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	mmi_panel_notify(MMI_PANEL_EVENT_PRE_DISPLAY_ON, NULL);
 
-	mdss_dsi_panel_regulator_on(pdata, 1);
-	mdss_dsi_panel_reset(pdata, 1);
+	if (ctrl->partial_mode_enabled
+		&& !pdata->panel_info.panel_dead) {
+		/* If we're doing partial display, we need to turn on the
+		   regulators once since we don't enable and disable during
+		   panel on/offs */
+		if (!ctrl->panel_data.panel_info.cont_splash_feature_on) {
+			static int once = 1;
+			if (once) {
+				mdss_dsi_panel_regulator_on(pdata, 1);
+				mdss_dsi_panel_reset(pdata, 1);
+				once = 0;
+			}
+		}
+
+		gpio_set_value(ctrl->mipi_d0_sel, 0);
+	} else {
+		if (ctrl->partial_mode_enabled && pdata->panel_info.panel_dead)
+			pr_warn("%s: Panel is dead, turn on panel regulators\n",
+				__func__);
+
+		mdss_dsi_panel_regulator_on(pdata, 1);
+		mdss_dsi_panel_reset(pdata, 1);
+	}
 
 	if (ctrl->on_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->on_cmds);
@@ -629,19 +650,12 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	if (ctrl->off_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->off_cmds);
 
-	if (pdata->panel_info.dynamic_cabc_enabled)
-		pdata->panel_info.cabc_mode = CABC_OFF_MODE;
-
-	mdss_dsi_panel_reset(pdata, 0);
-	mdss_dsi_panel_regulator_on(pdata, 0);
-
-	mmi_panel_notify(MMI_PANEL_EVENT_DISPLAY_OFF, NULL);
-
 #ifdef CONFIG_POWERSUSPEND
 	set_power_suspend_state_panel_hook(POWER_SUSPEND_ACTIVE);
 #endif
 
-	pr_debug("%s:-\n", __func__);
+	pr_info("%s-:\n", __func__);
+
 	return 0;
 }
 
@@ -1853,6 +1867,11 @@ int mdss_dsi_panel_init(struct device_node *node,
 
 	pinfo->dynamic_switch_pending = false;
 	pinfo->is_lpm_mode = false;
+
+	/* Since the cont_splash_enabled flag gets cleared when continuous
+	   splash is done, copy it here for later use so we can know if we
+	   ever did continuous splash */
+	pinfo->cont_splash_feature_on = pinfo->cont_splash_enabled;
 
 	ctrl_pdata->on = mdss_dsi_panel_on;
 	ctrl_pdata->off = mdss_dsi_panel_off;
