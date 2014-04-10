@@ -26,7 +26,6 @@
 #include <linux/suspend.h>
 #include <linux/fault-inject.h>
 #include <linux/random.h>
-#include <linux/wakelock.h>
 #include <linux/pm.h>
 #include <linux/slab.h>
 #include <linux/jiffies.h>
@@ -2130,6 +2129,8 @@ void mmc_detect_change(struct mmc_host *host, unsigned long delay)
 	WARN_ON(host->removed);
 	spin_unlock_irqrestore(&host->lock, flags);
 #endif
+	/* Don't try to suspend the system during card detection */
+	__pm_stay_awake(&host->detect_ws);
 	host->detect_change = 1;
 
 	mmc_schedule_delayed_work(&host->detect, delay);
@@ -3202,10 +3203,12 @@ void mmc_rescan(struct work_struct *work)
 {
 	struct mmc_host *host =
 		container_of(work, struct mmc_host, detect.work);
-	bool extend_wakelock = false;
+	bool stay_awake = false;
 
-	if (host->rescan_disable)
+	if (host->rescan_disable) {
+		__pm_relax(&host->detect_ws);
 		return;
+	}
 
 	mmc_bus_get(host);
 	mmc_rpm_hold(host, &host->class_dev);
@@ -3219,18 +3222,11 @@ void mmc_rescan(struct work_struct *work)
 		host->bus_ops->detect(host);
 
 	host->detect_change = 0;
-	/* If the card was removed the bus will be marked
-	 * as dead - extend the wakelock so userspace
-	 * can respond */
-	if (host->bus_dead)
-		extend_wakelock = 1;
 
-
-	/* If the card was removed the bus will be marked
-	 * as dead - extend the wakelock so userspace
-	 * can respond */
+	/* If the card was removed the bus will be marked as dead.  Stay awake
+	 * so that user space can respond. */
 	if (host->bus_dead)
-		extend_wakelock = 1;
+		stay_awake = true;
 
 	/*
 	 * Let mmc_bus_put() free the bus/bus_ops if we've found that
@@ -3271,16 +3267,19 @@ void mmc_rescan(struct work_struct *work)
 	mmc_rpm_hold(host, &host->class_dev);
 	mmc_claim_host(host);
 	if (!mmc_rescan_try_freq(host, host->f_min))
-		extend_wakelock = true;
+		stay_awake = true;
 	mmc_release_host(host);
 	mmc_rpm_release(host, &host->class_dev);
  out:
-	/* only extend the wakelock, if suspend has not started yet */
-	if (extend_wakelock && !host->rescan_disable)
-		wake_lock_timeout(&host->detect_wake_lock, HZ / 2);
+	if (stay_awake)
+		__pm_wakeup_event(&host->detect_ws, 2000);
+	else
+		__pm_relax(&host->detect_ws);
 
-	if (host->caps & MMC_CAP_NEEDS_POLL)
+	if (host->caps & MMC_CAP_NEEDS_POLL) {
+		__pm_stay_awake(&host->detect_ws);
 		mmc_schedule_delayed_work(&host->detect, HZ);
+	}
 }
 
 void mmc_start_host(struct mmc_host *host)
@@ -3298,7 +3297,8 @@ void mmc_stop_host(struct mmc_host *host)
 	spin_unlock_irqrestore(&host->lock, flags);
 #endif
 
-	cancel_delayed_work_sync(&host->detect);
+	if (cancel_delayed_work_sync(&host->detect))
+		__pm_relax(&host->detect_ws);
 
 	mmc_flush_scheduled_work();
 
@@ -3520,6 +3520,9 @@ int mmc_suspend_host(struct mmc_host *host)
 	if (mmc_bus_needs_resume(host))
 		return 0;
 
+	if (cancel_delayed_work(&host->detect))
+		__pm_relax(&host->detect_ws);
+
 	mmc_bus_get(host);
 	if (host->bus_ops && !host->bus_dead) {
 		/*
@@ -3666,23 +3669,16 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 		host->rescan_disable = 1;
 		spin_unlock_irqrestore(&host->lock, flags);
 
-		/* Wait for pending detect work to be completed */
-		if (!(host->caps & MMC_CAP_NEEDS_POLL))
-			flush_work(&host->detect.work);
-
-		/*
-		 * In some cases, the detect work might be scheduled
-		 * just before rescan_disable is set to true.
-		 * Cancel such the scheduled works.
-		 */
-		cancel_delayed_work_sync(&host->detect);
-
-		/*
-		 * It is possible that the wake-lock has been acquired, since
-		 * its being suspended, release the wakelock
-		 */
-		if (wake_lock_active(&host->detect_wake_lock))
-			wake_unlock(&host->detect_wake_lock);
+		/* Guard against races with the detect wakeup source. */
+		if (!(host->caps & MMC_CAP_NEEDS_POLL) &&
+		    work_busy(&host->detect.work)) {
+			pr_err("%s: card detection in progress\n",
+				mmc_hostname(host));
+			spin_lock_irqsave(&host->lock, flags);
+			host->rescan_disable = 0;
+			spin_unlock_irqrestore(&host->lock, flags);
+			return -EAGAIN;
+		}
 
 		if (!host->bus_ops || host->bus_ops->suspend)
 			break;
