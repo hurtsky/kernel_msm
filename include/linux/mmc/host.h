@@ -457,6 +457,9 @@ struct mmc_host {
 		enum mmc_load	state;
 	} clk_scaling;
 	enum dev_state dev_status;
+	unsigned long long	requests;	/* cumulative number of requests */
+	unsigned long long	request_errors;	/* cumulative number of request errors */
+
 	unsigned long		private[0] ____cacheline_aligned;
 };
 
