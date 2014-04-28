@@ -119,6 +119,8 @@ Parent node optional properties:
                                         which are above a certain Voltage threshold
  - qcom,step-charge-soc                 SOC threshold for High Voltage batteries to
                                         charge at a reduced rate.
+ - qcom,ir-comp                         Indicates support for Fast charge / Turbo feature where
+                                        IR compensaton is needed.
 
 Sub node required structure:
 - A qcom,chg node must be a child of an SPMI node that has specified
