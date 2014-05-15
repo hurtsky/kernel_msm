@@ -763,4 +763,5 @@ int mdss_mdp_pipe_program_pixel_extn(struct mdss_mdp_pipe *pipe);
 				(mfd->mdp.private1))->wb)
 
 int  mdss_mdp_ctl_reset(struct mdss_mdp_ctl *ctl);
+void mdss_mdp_footswitch_ctrl(struct mdss_data_type *mdata, int on);
 #endif /* MDSS_MDP_H */
