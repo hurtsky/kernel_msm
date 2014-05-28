@@ -1872,6 +1872,7 @@ int mdss_dsi_panel_init(struct device_node *node,
 	   splash is done, copy it here for later use so we can know if we
 	   ever did continuous splash */
 	pinfo->cont_splash_feature_on = pinfo->cont_splash_enabled;
+	pinfo->cont_splash_esd_rdy = false;
 
 	ctrl_pdata->on = mdss_dsi_panel_on;
 	ctrl_pdata->off = mdss_dsi_panel_off;
