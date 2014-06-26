@@ -3677,7 +3677,7 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 			if (err) {
 				pr_err("%s: didn't stop bkops\n",
 					mmc_hostname(host));
-				return err;
+				return notifier_from_errno(err);
 			}
 		}
 
@@ -3699,7 +3699,7 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 			spin_lock_irqsave(&host->lock, flags);
 			host->rescan_disable = 0;
 			spin_unlock_irqrestore(&host->lock, flags);
-			return -EAGAIN;
+			return notifier_from_errno(-EAGAIN);
 		}
 
 		if (!host->bus_ops || host->bus_ops->suspend)
@@ -3731,7 +3731,7 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 		break;
 
 	default:
-		return -EINVAL;
+		return notifier_from_errno(-EINVAL);
 	}
 
 	return 0;
