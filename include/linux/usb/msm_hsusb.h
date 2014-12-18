@@ -418,6 +418,7 @@ struct msm_otg {
 	atomic_t pm_suspended;
 	struct notifier_block pm_notify;
 	atomic_t in_lpm;
+	bool err_event_seen;
 	int async_int;
 	unsigned cur_power;
 	struct delayed_work chg_work;
