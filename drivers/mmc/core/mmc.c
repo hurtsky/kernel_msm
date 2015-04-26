@@ -66,6 +66,9 @@ static const struct mmc_fixup mmc_fixups[] = {
 	MMC_FIXUP_EXT_CSD_REV(CID_NAME_ANY, CID_MANFID_HYNIX,
 			      0x014a, add_quirk, MMC_QUIRK_BROKEN_HPI, 5),
 
+	MMC_FIXUP_FW_VER(CID_NAME_ANY, CID_MANFID_MICRON2, CID_OEMID_ANY,
+			 add_quirk_mmc, MMC_QUIRK_CACHE_DISABLE, 6, 0xaf),
+
 	/* Disable HPI feature for Kingstone card */
 	MMC_FIXUP_EXT_CSD_REV("MMC16G", CID_MANFID_KINGSTON, CID_OEMID_ANY,
 			add_quirk, MMC_QUIRK_BROKEN_HPI, 5),
@@ -1732,6 +1735,12 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		} else {
 			card->ext_csd.cache_ctrl = 1;
 		}
+<<<<<<< HEAD
+=======
+	} else if (card->quirks & MMC_QUIRK_CACHE_DISABLE) {
+		pr_debug("%s: cache disabled\n", mmc_hostname(card->host));
+		card->ext_csd.cache_ctrl = 0;
+>>>>>>> 0484c2e... mmc: disable cache on known-bad Micron eMMCs
 	}
 
 	if ((host->caps2 & MMC_CAP2_PACKED_WR &&
