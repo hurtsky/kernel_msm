@@ -39,8 +39,6 @@
 #define MDSS_PANEL_DEFAULT_VER 0xffffffffffffffff
 #define MDSS_PANEL_UNKNOWN_NAME "unknown"
 
-#define DT_CMD_HDR 6
-
 #define MIN_REFRESH_RATE 30
 
 DEFINE_LED_TRIGGER(bl_led_trigger);
@@ -266,7 +264,8 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 				gpio_set_value((ctrl_pdata->rst_gpio),
 					ctrl_pdata->rst_seq[i]);
 				if (ctrl_pdata->rst_seq[++i])
-					usleep(ctrl_pdata->rst_seq[i] * 1000);
+					usleep_range(ctrl_pdata->rst_seq[i] * 1000,
+						ctrl_pdata->rst_seq[i] * 1000);
 			}
 		}
 
@@ -642,13 +641,6 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	set_power_suspend_state_panel_hook(POWER_SUSPEND_ACTIVE);
 #endif
 
-	pr_info("%s:-\n", __func__);
-
-	mdss_dsi_panel_reset(pdata, 0);
-	mdss_dsi_panel_regulator_on(pdata, 0);
-
-	mmi_panel_notify(MMI_PANEL_EVENT_DISPLAY_OFF, NULL);
-
 	pr_debug("%s:-\n", __func__);
 	return 0;
 }
@@ -792,20 +784,21 @@ static int mdss_panel_parse_panel_reg_dt(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 
 	pr_debug("%s is called\n", __func__);
 
-	/* Parse the regulator information */
-	rc = mdss_dsi_get_dt_vreg_data(&ctrl_pdata->pdev->dev,
-				&ctrl_pdata->panel_vregs, node);
-	if (rc) {
-		pr_err("%s: failed to get vreg data from dt. rc=%d\n",
-								__func__, rc);
-		goto error_vreg;
+	if (!ctrl_pdata->pdev) {
+		pr_err("%s: invalid pdev\n", __func__);
+		return -EINVAL;
 	}
-
-	return 0;
-
-error_vreg:
-	mdss_dsi_put_dt_vreg_data(&ctrl_pdata->pdev->dev,
-				&ctrl_pdata->panel_vregs);
+	/* Parse the regulator information */
+	if (ctrl_pdata->get_dt_vreg_data) {
+		rc = ctrl_pdata->get_dt_vreg_data(&ctrl_pdata->pdev->dev,
+						&ctrl_pdata->panel_vregs, node);
+		if (rc)
+			pr_err("%s: failed to get vreg data from dt. rc=%d\n",
+								__func__, rc);
+	} else {
+		pr_err("%s: get_dt_vreg_data is not defined\n", __func__);
+		rc = -EINVAL;
+	}
 
 	return rc;
 }
@@ -1521,6 +1514,9 @@ static int mdss_panel_parse_dt(struct device_node *np,
 	rc = of_property_read_u32(np, "qcom,mdss-dsi-bl-max-level", &tmp);
 	pinfo->bl_max = (!rc ? tmp : 255);
 	ctrl_pdata->bklt_max = pinfo->bl_max;
+
+	rc = of_property_read_u32(np, "qcom,mdss-dsi-bl-shutdown-delay", &tmp);
+	pinfo->bl_shutdown_delay = (!rc ? tmp : 0);
 
 	rc = of_property_read_u32(np, "qcom,mdss-dsi-interleave-mode", &tmp);
 	pinfo->mipi.interleave_mode = (!rc ? tmp : 0);

@@ -870,9 +870,6 @@ int mdss_dsi_cont_splash_on(struct mdss_panel_data *pdata)
 	mdss_dsi_sw_reset(pdata);
 	mdss_dsi_host_init(pdata);
 	mdss_dsi_op_mode_config(mipi->mode, pdata);
-
-//	if (ctrl_pdata->cont_splash_on)
-//		ctrl_pdata->cont_splash_on(pdata);
 	pr_debug("%s-:End\n", __func__);
 	return ret;
 }
@@ -1297,21 +1294,20 @@ static int __devinit mdss_dsi_ctrl_probe(struct platform_device *pdev)
 		goto error_no_mem;
 	}
 
-	/* Parse the regulator information */
-	rc = mdss_panel_parse_panel_config_dt(ctrl_pdata);
-
-	if (rc) {
-		pr_err("%s: failed to get vreg data from dt. rc=%d\n",
-		       __func__, rc);
-		goto error_vreg;
-	}
-
 	/* DSI panels can be different between controllers */
 	rc = mdss_dsi_get_panel_cfg(panel_cfg);
 	if (!rc)
 		/* dsi panel cfg not present */
 		pr_warn("%s:%d:dsi specific cfg not present\n",
 			__func__, __LINE__);
+
+	/* Parse panel config */
+	rc = mdss_panel_parse_panel_config_dt(ctrl_pdata);
+	if (rc) {
+		pr_err("%s: failed to parse panel config dt, rc = %d\n",
+			__func__, rc);
+		goto error_vreg;
+	}
 
 	/* find panel device node */
 	dsi_pan_node = mdss_dsi_find_panel_of_node(pdev, panel_cfg, ctrl_pdata);
@@ -1320,9 +1316,19 @@ static int __devinit mdss_dsi_ctrl_probe(struct platform_device *pdev)
 		goto error_pan_node;
 	}
 
+	/* Parse the regulator information */
+	rc = mdss_dsi_get_dt_vreg_data(&pdev->dev,
+					&ctrl_pdata->power_data, NULL);
+	if (rc) {
+		pr_err("%s: failed to get vreg data from dt. rc=%d\n",
+								__func__, rc);
+		goto error_pan_node;
+	}
+
 	cmd_cfg_cont_splash = mdss_panel_get_boot_cfg() ? true : false;
 
 	ctrl_pdata->pdev = pdev;
+	ctrl_pdata->get_dt_vreg_data = mdss_dsi_get_dt_vreg_data;
 	rc = mdss_dsi_panel_init(dsi_pan_node, ctrl_pdata, cmd_cfg_cont_splash);
 	if (rc) {
 		pr_err("%s: dsi panel init failed\n", __func__);
