@@ -1,6 +1,6 @@
 config MSM_CAMERA_SENSOR
 	    bool "Qualcomm MSM camera sensor support"
-	    depends on MSMB_CAMERA
+	    depends on MSMB_CAMERA_MOTO
         ---help---
           This flag enables support for Camera Sensor.
           The sensor driver is capable of providing real time
@@ -9,7 +9,7 @@ config MSM_CAMERA_SENSOR
 
 config MSM_CPP
         bool "Qualcomm MSM Camera Post Processing Engine support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for Camera Post-processing Engine
           The Post processing engine is capable of scaling
@@ -18,7 +18,7 @@ config MSM_CPP
 
 config MSM_CCI
         bool "Qualcomm MSM Camera Control Interface support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for Camera Control Interface driver only
           for those platforms that have hardware support. This driver
@@ -28,7 +28,7 @@ config MSM_CCI
 
 config MSM_CSI20_HEADER
         bool "Qualcomm MSM CSI 2.0 Header"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for CSI drivers to include 2.0
           header. This header has register macros and its
@@ -38,7 +38,7 @@ config MSM_CSI20_HEADER
 
 config MSM_CSI22_HEADER
         bool "Qualcomm MSM CSI 2.2 Header"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for CSI drivers to include 2.2
           header. This header has register macros and its
@@ -48,7 +48,7 @@ config MSM_CSI22_HEADER
 
 config MSM_CSI30_HEADER
         bool "Qualcomm MSM CSI 3.0 Header"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for CSI drivers to include 3.0
           header. This header has register macros and its
@@ -58,7 +58,7 @@ config MSM_CSI30_HEADER
 
 config MSM_CSIPHY
         bool "Qualcomm MSM Camera Serial Interface Physical receiver support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for Camera Serial Interface
           Physical receiver. It deserializes packets and
@@ -67,7 +67,7 @@ config MSM_CSIPHY
 
 config MSM_CSID
         bool "Qualcomm MSM Camera Serial Interface decoder support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for Camera Serial Interface decoder.
           It supports lane merging and decoding of packets
@@ -76,7 +76,7 @@ config MSM_CSID
 
 config MSM_EEPROM
         bool "Qualcomm MSM Camera ROM Interface for Calibration support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for ROM Interface for Calibration
           Provides interface for reading the Claibration data.
@@ -85,7 +85,7 @@ config MSM_EEPROM
 
 config MSM_ISPIF
         bool "Qualcomm MSM Image Signal Processing interface support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for Image Signal Processing interface module.
           This module acts as a crossbar between CSID and VFE. Output
@@ -94,7 +94,7 @@ config MSM_ISPIF
 
 config MSM_ISPIF_V1
         bool "Qualcomm MSM Image Signal Processing interface support"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
           Enable support for Image Signal Processing interface module.
           This module acts as a crossbar between CSID and VFE. Output
@@ -103,7 +103,7 @@ config MSM_ISPIF_V1
 
 config S5K3L1YX
 	bool "Sensor S5K3L1YX (BAYER 12M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Samsung 12 MP Bayer Sensor with auto focus, uses
 		4 mipi lanes, preview config = 1984 * 1508 at 30 fps,
@@ -112,7 +112,7 @@ config S5K3L1YX
 
 config IMX135
 	bool "Sensor IMX135 (BAYER 12M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Sony 12 MP Bayer Sensor with auto focus, uses
 		4 mipi lanes, preview config = 2104 x 1560 at 49 fps,
@@ -121,7 +121,7 @@ config IMX135
 
 config IMX179
 	bool "Sensor IMX179 (BAYER 8M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Sony 8 MP Bayer Sensor with auto focus, uses
 		4 mipi lanes, preview config = 3280 x 2464 at 30 fps,
@@ -129,7 +129,7 @@ config IMX179
 
 config S5K5E2
 	bool "Sensor S5K5E2 (BAYER 5MP)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Samsung 5 MP Bayer sensor with auto focus, uses
 		2 mipi lanes, preview config = 2560 x 1920 at 30 fps,
@@ -137,7 +137,7 @@ config S5K5E2
 
 config T4K71
 	bool "Sensor T4K71 (BAYER 2M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Toshiba 2 MP Bayer Sensor with auto focus, uses
 		1 mipi lanes, preview config = 1920 x 1080 at 30 fps,
@@ -145,7 +145,7 @@ config T4K71
 
 config MT9V113
         bool "Sensor MT9V113 (YUV .3MP)"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
                 MT9V113 is Aptina YUV sensor. It supports .3 MP preview
                 and snapshot. The preview and snapshot resolution shall be
@@ -154,7 +154,7 @@ config MT9V113
 
 config IMX134
 	bool "Sensor IMX134 (BAYER 8M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Sony 8 MP Bayer Sensor with auto focus, uses
 		4 mipi lanes full resolution @30fps and
@@ -163,7 +163,7 @@ config IMX134
 
 config OV2720
 	bool "Sensor OV2720 (BAYER 2M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OmniVision 2 MP Bayer Sensor, supports 2 mipi lanes,
 		preview and snapshot config at 1932 * 1092 at 30 fps,
@@ -172,7 +172,7 @@ config OV2720
 
 config OV9724
 	bool "Sensor OV9724 (BAYER 2M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OmniVision 2 MP Bayer Sensor, supports 2 mipi lanes,
 		preview and snapshot config at 1280*720 at 30 fps,
@@ -181,7 +181,7 @@ config OV9724
 
 config HI256
         bool "Hynix hi256 (YUV 2MP)"
-        depends on MSMB_CAMERA
+        depends on MSMB_CAMERA_MOTO
         ---help---
                 OmniVision 8 MP Bayer Sensor with auto focus.uses
                 2 mipi lanes, preview config = 1632*1224 30 fps,
@@ -190,7 +190,7 @@ config HI256
 
 config OV5648
 	bool "Sensor OV5648 (BAYER 5M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OmniVision 5 MP Bayer Sensor, only use 1 mipi lane,
 		preview set to 1296*972 at 30 fps,
@@ -199,7 +199,7 @@ config OV5648
 
 config MT9M114
 	bool "Sensor MT9M114 (YUV 1.26MP)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		MT9M114 is Aptina YUV sensor. It supports 1.26 MP preview
 		and snapshot. The preview and snapshot resolution shall be
@@ -208,7 +208,7 @@ config MT9M114
 
 config IMX132
    bool "Sensor IMX132 (BAYER 2M)"
-   depends on MSMB_CAMERA
+   depends on MSMB_CAMERA_MOTO
    ---help---
        Sony 2 MP Bayer Sensor with auto focus, uses
        2 mipi lanes, preview config = 1920 x 1080 at 30 fps,
@@ -216,7 +216,7 @@ config IMX132
 
 config SP1628
 	bool "Sensor SP1628 (YUV 720P)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		SP1628 is SuperPix YUV sensor. It supports 720P preview
 		and snapshot. The preview and snapshot resolution shall be
@@ -225,7 +225,7 @@ config SP1628
 
 config GC0339
 	bool "Sensor GC0339 (BAYER .3M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		gc0339 is a Galaxycore .3 MP Bayer Sensor.
 		It supports 1 or 2 mipi lanes.
@@ -234,7 +234,7 @@ config GC0339
 
 config OV8825
 	bool "OmniVision OV8825 (BAYER 8MP)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OmniVision 8 MP Bayer Sensor with auto focus.uses
 		2 mipi lanes, preview config = 1632*1224 30 fps,
@@ -243,7 +243,7 @@ config OV8825
 
 config OV8865
 	bool "OmniVision OV8865 (BAYER 8MP)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OmniVision 8 MP Bayer Sensor with auto focus.uses
 		4 mipi lanes, preview config = 1632*1224 30 fps,
@@ -252,7 +252,7 @@ config OV8865
 
 config s5k4e1
 	bool "Sensor s5k4e1 (BAYER 5MP)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Samsung 5 MP Bayer Sensor. It uses 2 mipi lanes,
 		supports 720P preview at 30 fps
@@ -261,7 +261,7 @@ config s5k4e1
 
 config OV12830
 	bool "OmniVision OV12830 (BAYER 12MP)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OmniVision 12.8 MP Bayer Sensor with auto focus.uses
 		4 mipi lanes, preview config = 2112 * 1500 at 30 fps,
@@ -270,7 +270,7 @@ config OV12830
 
 config AR0261
 	bool "Sensor AR0261 (BAYER 2M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		Aptina 2 MP Bayer Sensor.
 		It uses 2 mipi lanes,
@@ -288,14 +288,14 @@ config OV10820
 
 config OV660
 	bool "Sensor OV660 (ASIC)"
-	depends on MSMB_CAMERA && ARCH_MSM8974
+	depends on MSMB_CAMERA_MOTO && ARCH_MSM8974
 	default n
 	--- help ---
 		Omnivision ASIC for 8MP and 10MP Sensor.
 
 config AR0543
 	bool "Sensor AR0543 (BAYER 5M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		AR0543 5 MP Bayer Sensor, supports 2 mipi lanes,
 		preview at 1296 * 972 at 30 fps and snapshot
@@ -303,7 +303,7 @@ config AR0543
 
 config OV5693
 	bool "Sensor OV5693 (BAYER 5M)"
-	depends on MSMB_CAMERA
+	depends on MSMB_CAMERA_MOTO
 	---help---
 		OV5693 5 MP Bayer Sensor, supports 2 mipi lanes,
 		preview at 1296 * 972 at 30 fps and snapshot
@@ -319,7 +319,7 @@ config MSM_V4L2_VIDEO_OVERLAY_DEVICE
 
 config MSMB_JPEG
 	tristate "Qualcomm MSM Jpeg Encoder Engine support"
-	depends on MSMB_CAMERA && (ARCH_MSM8974 || ARCH_MSM8226)
+	depends on MSMB_CAMERA_MOTO && (ARCH_MSM8974 || ARCH_MSM8226)
 	---help---
 	  Enable support for Jpeg Encoder/Decoder
 	  Engine for 8974.
@@ -328,6 +328,6 @@ config MSMB_JPEG
 
 config MSM_GEMINI
 	tristate "Qualcomm MSM Gemini JPEG engine support"
-	depends on MSMB_CAMERA && (ARCH_MSM7X30 || ARCH_MSM8X60 || ARCH_MSM8960)
+	depends on MSMB_CAMERA_MOTO && (ARCH_MSM7X30 || ARCH_MSM8X60 || ARCH_MSM8960)
 	---help---
 	  Enables support for the Gemini JPEG encoder engine for 8x60.

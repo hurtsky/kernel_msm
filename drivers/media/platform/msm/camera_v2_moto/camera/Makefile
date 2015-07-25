@@ -1,3 +1,3 @@
 ccflags-y += -Idrivers/media/platform/msm/camera_v2_moto
 ccflags-y += -Idrivers/media/platform/msm/camera_v2_moto/msm_vb2
-obj-$(CONFIG_MSMB_CAMERA) += camera.o
+obj-$(CONFIG_MSMB_CAMERA_MOTO) += camera.o
