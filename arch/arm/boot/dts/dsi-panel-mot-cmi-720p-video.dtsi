@@ -48,6 +48,12 @@
                 qcom,mdss-dsi-border-color = <0>;
 		qcom,splash-no-solid-fill;
 
+		qcom,esd-check-enabled;
+		//qcom,mdss-dsi-te-pin-select = <1>;
+		//qcom,mdss-dsi-te-dcs-command = <1>;
+		//qcom,mdss-dsi-te-check-enable;
+		//qcom,mdss-dsi-te-using-te-pin;
+
                 qcom,mdss-dsi-tune-h-front-porch = <96>;
                 qcom,mdss-dsi-tune-h-back-porch = <96>;
                 qcom,mdss-dsi-tune-h-pulse-width = <4>;
@@ -96,7 +102,6 @@
 		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
 
 		qcom,mdss-dsi-esd-det-mode = <1>;
-		qcom,esd-check-enabled;
 
 		qcom,panel-en-reset-sequence = <1 11>;
 		qcom,panel-dis-reset-sequence = <0 3>;

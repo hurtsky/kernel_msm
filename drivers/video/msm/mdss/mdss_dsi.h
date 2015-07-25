@@ -386,7 +386,6 @@ irqreturn_t mdss_dsi_isr(int irq, void *ptr);
 void mdss_dsi_irq_handler_config(struct mdss_dsi_ctrl_pdata *ctrl_pdata);
 
 void mdss_dsi_set_tx_power_mode(int mode, struct mdss_panel_data *pdata);
-int mdss_get_tx_power_mode(struct mdss_panel_data *pdata);
 int mdss_dsi_clk_div_config(struct mdss_panel_info *panel_info,
 			    int frame_rate);
 int mdss_dsi_clk_init(struct platform_device *pdev,
@@ -422,8 +421,6 @@ bool mdss_dsi_match_chosen_panel(struct device_node *np,
 				struct mdss_panel_config *pconfig);
 int mdss_panel_get_dst_fmt(u32 bpp, char mipi_mode, u32 pixel_packing,
 				char *dst_format);
-int mdss_dsi_panel_ioctl_handler(struct mdss_panel_data *pdata,
-					u32 cmd, void *arg);
 
 int mdss_dsi_register_recovery_handler(struct mdss_dsi_ctrl_pdata *ctrl,
 		struct mdss_panel_recovery *recovery);
