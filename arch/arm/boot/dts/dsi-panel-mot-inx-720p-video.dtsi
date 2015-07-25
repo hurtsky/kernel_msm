@@ -27,6 +27,7 @@
 		qcom,mdss-dsi-panel-height = <1280>;
 		qcom,mdss-pan-physical-width-dimension = <62>;
 		qcom,mdss-pan-physical-height-dimension = <110>;
+		qcom,panel-roi-alignment = <2 2 2 2 0 0>;
 		qcom,mdss-dsi-panel-clockrate = <421729920>;
 		qcom,mdss-dsi-h-front-porch = <48>;
 		qcom,mdss-dsi-h-back-porch = <68>;
@@ -43,6 +44,12 @@
 		qcom,mdss-dsi-underflow-color = <0xff>;
 		qcom,mdss-dsi-border-color = <0>;
 		qcom,splash-no-solid-fill;
+
+		qcom,esd-check-enabled;
+		//qcom,mdss-dsi-te-pin-select = <1>;
+		//qcom,mdss-dsi-te-dcs-command = <1>;
+		//qcom,mdss-dsi-te-check-enable;
+		//qcom,mdss-dsi-te-using-te-pin;
 
 		qcom,mdss-dsi-on-command = [
 			29 01 00 00 00 00 06 F0 55 AA 52 08 00	/* Page 0 */
@@ -61,6 +68,11 @@
 
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-panel-status-check-mode = "moto_check";
+		qcom,dynamic-mode-switch-enabled;
+		qcom,video-to-cmd-mode-switch-commands = [15 01 00 00 14 00 02 C2 0B
+					15 01 00 00 00 00 02 C2 08];
+		qcom,cmd-to-video-mode-switch-commands = [15 01 00 00 00 00 02 C2 03];
 		qcom,mdss-dsi-cabc-ui-command = [15 01 00 00 00 00 02 55 01];
 		qcom,mdss-dsi-cabc-mv-command = [15 01 00 00 00 00 02 55 03];
 		qcom,mdss-dsi-hbm-off-brightness = <256>;
