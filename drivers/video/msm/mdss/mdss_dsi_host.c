@@ -402,7 +402,6 @@ void mdss_dsi_set_tx_power_mode(int mode, struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
 	data = MIPI_INP((ctrl_pdata->ctrl_base) + 0x3c);
 
 	if (mode == 0)
@@ -411,21 +410,6 @@ void mdss_dsi_set_tx_power_mode(int mode, struct mdss_panel_data *pdata)
 		data |= BIT(26);
 
 	MIPI_OUTP((ctrl_pdata->ctrl_base) + 0x3c, data);
-	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
-}
-
-int mdss_get_tx_power_mode(struct mdss_panel_data *pdata)
-{
-	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
-	u32 data;
-
-	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
-				panel_data);
-
-	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 1);
-	data = MIPI_INP((ctrl_pdata->ctrl_base) + 0x3c);
-	mdss_dsi_clk_ctrl(ctrl_pdata, DSI_ALL_CLKS, 0);
-	return !!(data & BIT(26));
 }
 
 void mdss_dsi_sw_reset(struct mdss_panel_data *pdata)
@@ -915,30 +899,6 @@ static int mdss_dsi_cmd_dma_tx(struct mdss_dsi_ctrl_pdata *ctrl,
 static int mdss_dsi_cmd_dma_rx(struct mdss_dsi_ctrl_pdata *ctrl,
 			struct dsi_buf *rp, int rlen);
 
-void mdss_dsi_reg_dump(struct mdss_dsi_ctrl_pdata *ctrl, char *prestring)
-{
-	static int count;
-	u32 tmp0x0, tmp0x4, tmp0x8, tmp0xc;
-	int i;
-
-	if (count >= 5)
-		return;
-
-	count++;
-	pr_err("%s: =============%s==============\n", prestring, __func__);
-	mdss_dsi_clk_ctrl(ctrl, DSI_ALL_CLKS, 1);
-	for (i = 0; i < 91; i++) {
-		tmp0x0 = MIPI_INP(ctrl->ctrl_base + (i*16) + 0x0);
-		tmp0x4 = MIPI_INP(ctrl->ctrl_base + (i*16) + 0x4);
-		tmp0x8 = MIPI_INP(ctrl->ctrl_base + (i*16) + 0x8);
-		tmp0xc = MIPI_INP(ctrl->ctrl_base + (i*16) + 0xc);
-		pr_err("[%04x] : %08x %08x %08x %08x\n",
-			i*16, tmp0x0, tmp0x4, tmp0x8, tmp0xc);
-	}
-	mdss_dsi_clk_ctrl(ctrl, DSI_ALL_CLKS, 0);
-	pr_err("%s: ============= END ==============\n", __func__);
-}
-
 static int mdss_dsi_cmds2buf_tx(struct mdss_dsi_ctrl_pdata *ctrl,
 			struct dsi_cmd_desc *cmds, int cnt)
 {
@@ -1174,9 +1134,8 @@ int mdss_dsi_cmds_rx(struct mdss_dsi_ctrl_pdata *ctrl,
 		ret = mdss_dsi_cmd_dma_tx(ctrl, tp);
 		if (IS_ERR_VALUE(ret)) {
 			mdss_dsi_disable_irq(ctrl, DSI_CMD_TERM);
-			pr_err("%s: failed to tx max packet size\n",
+			pr_err("%s: failed to tx max_pkt_size\n",
 				__func__);
-			mdss_dsi_reg_dump(ctrl, "mdss_dsi_cmds_rx max packet");
 			rp->len = 0;
 			goto end;
 		}
@@ -1198,9 +1157,8 @@ int mdss_dsi_cmds_rx(struct mdss_dsi_ctrl_pdata *ctrl,
 		ret = mdss_dsi_cmd_dma_tx(ctrl, tp);
 		if (IS_ERR_VALUE(ret)) {
 			mdss_dsi_disable_irq(ctrl, DSI_CMD_TERM);
-		pr_err("%s: failed to tx read request\n",
-			__func__);
-		mdss_dsi_reg_dump(ctrl, "mdss_dsi_cmds_rx read req");
+			pr_err("%s: failed to tx cmd = 0x%x\n",
+				__func__,  cmds->payload[0]);
 			rp->len = 0;
 			goto end;
 		}
@@ -1539,10 +1497,9 @@ int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp)
 	if (req->flags & CMD_REQ_HS_MODE)
 		mdss_dsi_set_tx_power_mode(0, &ctrl->panel_data);
 
-	if (req->flags & CMD_REQ_RX) {
-		mdss_dsi_cmdlist_rx(ctrl, req);
-		ret = ctrl->rx_buf.len;
-	} else
+	if (req->flags & CMD_REQ_RX)
+		ret = mdss_dsi_cmdlist_rx(ctrl, req);
+	else
 		ret = mdss_dsi_cmdlist_tx(ctrl, req);
 
 	if (req->flags & CMD_REQ_HS_MODE)

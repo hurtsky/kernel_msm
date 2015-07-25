@@ -158,6 +158,8 @@ static void netlink_sock_destruct(struct sock *sk)
 	if (nlk->cb_running) {
 		if (nlk->cb.done)
 			nlk->cb.done(&nlk->cb);
+
+		module_put(nlk->cb.module);
 		kfree_skb(nlk->cb.skb);
 	}
 
@@ -1793,7 +1795,6 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	mutex_unlock(nlk->cb_mutex);
 
 	ret = netlink_dump(sk);
-
 	sock_put(sk);
 
 	if (ret)
