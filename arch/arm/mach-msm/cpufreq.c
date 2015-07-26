@@ -132,33 +132,12 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
 
 	trace_cpu_frequency_switch_start(freqs.old, freqs.new, policy->cpu);
-<<<<<<< HEAD
-	if (is_clk) {
-		if (cpu_clk[policy->cpu]) {
-			unsigned long rate = new_freq * 1000;
-			rate = clk_round_rate(cpu_clk[policy->cpu], rate);
-			ret = clk_set_rate(cpu_clk[policy->cpu], rate);
-			if (!ret) {
-				freq_index[policy->cpu] = index;
-				update_l2_bw(NULL);
-			}
-		}
-	} else {
-		ret = acpuclk_set_rate(policy->cpu, new_freq, SETRATE_CPUFREQ);
-=======
 	rate = new_freq * 1000;
 	rate = clk_round_rate(cpu_clk[policy->cpu], rate);
 	ret = clk_set_rate(cpu_clk[policy->cpu], rate);
 	if (!ret) {
 		freq_index[policy->cpu] = index;
 		update_l2_bw(NULL);
-<<<<<<< HEAD
->>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
-	}
-
-	if (!ret) {
-=======
->>>>>>> 5e683fe... msm: cpufreq: Remove redundant check in cpu_set_freq
 		trace_cpu_frequency_switch_end(policy->cpu);
 		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 	}
@@ -238,21 +217,7 @@ static int msm_cpufreq_verify(struct cpufreq_policy *policy)
 
 static unsigned int msm_cpufreq_get_freq(unsigned int cpu)
 {
-<<<<<<< HEAD
-	if (is_clk && is_sync)
-		cpu = 0;
-
-	if (is_clk) {
-		if (cpu_clk[cpu])
-			return clk_get_rate(cpu_clk[cpu]) / 1000;
-		else if (is_sync)
-			return clk_get_rate(cpu_clk[0]) / 1000;
-	}
-
-	return acpuclk_get_rate(cpu);
-=======
 	return clk_get_rate(cpu_clk[cpu]) / 1000;
->>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 }
 
 static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
@@ -293,11 +258,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
 #endif
 
-<<<<<<< HEAD
-	cur_freq = msm_cpufreq_get_freq(policy->cpu);
-=======
 	cur_freq = clk_get_rate(cpu_clk[policy->cpu])/1000;
->>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 
 	if (cpufreq_frequency_table_target(policy, table, cur_freq,
 	    CPUFREQ_RELATION_H, &index) &&
@@ -342,24 +303,6 @@ static int __cpuinit msm_cpufreq_cpu_callback(struct notifier_block *nfb,
 		update_l2_bw(NULL);
 		break;
 	case CPU_UP_CANCELED:
-<<<<<<< HEAD
-		if (is_clk && cpu_clk[cpu]) {
-			clk_unprepare(cpu_clk[cpu]);
-			clk_unprepare(l2_clk);
-			update_l2_bw(NULL);
-		}
-		break;
-	case CPU_UP_PREPARE:
-		if (is_clk && cpu_clk[cpu]) {
-			rc = clk_prepare(l2_clk);
-			if (rc < 0)
-				return NOTIFY_BAD;
-			rc = clk_prepare(cpu_clk[cpu]);
-			if (rc < 0)
-				return NOTIFY_BAD;
-			update_l2_bw(&cpu);
-		}
-=======
 		clk_unprepare(cpu_clk[cpu]);
 		clk_unprepare(l2_clk);
 		update_l2_bw(NULL);
@@ -374,7 +317,6 @@ static int __cpuinit msm_cpufreq_cpu_callback(struct notifier_block *nfb,
 			return NOTIFY_BAD;
 		}
 		update_l2_bw(&cpu);
->>>>>>> edad62e... msm: cpufreq: Remove acpuclock calls from cpufreq
 		break;
 	case CPU_STARTING:
 		rc = clk_enable(l2_clk);
