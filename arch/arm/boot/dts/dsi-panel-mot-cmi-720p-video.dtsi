@@ -49,10 +49,10 @@
 		qcom,splash-no-solid-fill;
 
 		qcom,esd-check-enabled;
-		//qcom,mdss-dsi-te-pin-select = <1>;
-		//qcom,mdss-dsi-te-dcs-command = <1>;
-		//qcom,mdss-dsi-te-check-enable;
-		//qcom,mdss-dsi-te-using-te-pin;
+		qcom,mdss-dsi-te-pin-select = <1>;
+		qcom,mdss-dsi-te-dcs-command = <1>;
+		qcom,mdss-dsi-te-check-enable;
+		qcom,mdss-dsi-te-using-te-pin;
 
                 qcom,mdss-dsi-tune-h-front-porch = <96>;
                 qcom,mdss-dsi-tune-h-back-porch = <96>;

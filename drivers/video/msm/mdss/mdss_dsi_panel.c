@@ -538,9 +538,10 @@ error:
 }
 static int mdss_dsi_panel_cont_splash_on(struct mdss_panel_data *pdata)
 {
+	mdss_dsi_panel_regulator_on(pdata, 1);
+
 	mmi_panel_notify(MMI_PANEL_EVENT_DISPLAY_ON, NULL);
-	pdata->panel_info.cont_splash_esd_rdy = true;
-	pr_info("%s: Panel continuous splash finished\n", __func__);
+
 	return 0;
 }
 
