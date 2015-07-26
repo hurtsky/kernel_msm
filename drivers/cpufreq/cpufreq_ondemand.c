@@ -1081,7 +1081,6 @@ static int __init cpufreq_gov_dbs_init(void)
 			&per_cpu(od_cpu_dbs_info, i);
 
 		mutex_init(&this_dbs_info->timer_mutex);
-		atomic_set(&this_dbs_info->being_woken, 0);
 	}
 
 	return cpufreq_register_governor(&cpufreq_gov_ondemand);
