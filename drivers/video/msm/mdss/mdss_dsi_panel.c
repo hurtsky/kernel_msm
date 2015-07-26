@@ -588,8 +588,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 	if (pdata->panel_info.dynamic_cabc_enabled)
 		pdata->panel_info.cabc_mode = CABC_UI_MODE;
 
-	pr_info("%s: pwr_mode =0x%x expected = 0x%x\n",
-		__func__, pwr_mode, esd_data->esd_pwr_mode_chk);
+        pr_info("%s - Power Mode = 0x%x\n", __func__, pwr_mode);
 
 	return 0;
 }
@@ -618,8 +617,8 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 	if (ctrl->off_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->off_cmds);
 
-	//if (pdata->panel_info.dynamic_cabc_enabled)
-		//pdata->panel_info.cabc_mode = CABC_OFF_MODE;
+	if (pdata->panel_info.dynamic_cabc_enabled)
+		pdata->panel_info.cabc_mode = CABC_OFF_MODE;
 
 	mdss_dsi_panel_reset(pdata, 0);
 	mdss_dsi_panel_regulator_on(pdata, 0);
