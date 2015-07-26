@@ -845,8 +845,6 @@ static int mdss_dsi_blank(struct mdss_panel_data *pdata)
 
 int mdss_dsi_cont_splash_on(struct mdss_panel_data *pdata)
 {
-	int ret = 0;
-	struct mipi_panel_info *mipi;
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 
 	pr_info("%s:%d DSI on for continuous splash.\n", __func__, __LINE__);
@@ -855,8 +853,6 @@ int mdss_dsi_cont_splash_on(struct mdss_panel_data *pdata)
 		pr_err("%s: Invalid input data\n", __func__);
 		return -EINVAL;
 	}
-
-	mipi = &pdata->panel_info.mipi;
 
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
@@ -1049,10 +1045,6 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 			rc = mdss_dsi_blank(pdata);
 		ctrl_pdata->ctrl_state &= ~CTRL_STATE_MDP_ACTIVE;
 		rc = mdss_dsi_cont_splash_on(pdata);
-		break;
-	case MDSS_EVENT_PANEL_CONT_SPLASH_FINISH:
-		if (ctrl_pdata->cont_splash_on)
-			rc = ctrl_pdata->cont_splash_on(pdata);
 		break;
 	case MDSS_EVENT_PANEL_CLK_CTRL:
 		mdss_dsi_clk_req(ctrl_pdata, (int)arg);
