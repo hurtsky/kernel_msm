@@ -597,7 +597,8 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 	if (pdata->panel_info.dynamic_cabc_enabled)
 		pdata->panel_info.cabc_mode = CABC_UI_MODE;
 
-	pr_info("%s-. Pwr_mode(0x0A) = 0x%x\n", __func__, pwr_mode);
+	pr_info("%s: pwr_mode =0x%x expected = 0x%x\n",
+		__func__, pwr_mode, esd_data->esd_pwr_mode_chk);
 
 	return 0;
 }
