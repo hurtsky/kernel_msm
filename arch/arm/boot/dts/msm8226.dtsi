@@ -1371,7 +1371,7 @@
 				<55 512 393600 3936000>;
 	};
 
-	qcom,qcrypto@fd404000 {
+	qcom_crypto: qcrypto@fd404000 {
 		compatible = "qcom,qcrypto";
                 reg  =  <0xfd400000 0x20000>,
                         <0xfd404000 0x8000>;
@@ -1390,7 +1390,7 @@
 				<55 512 3936000 393600>;
 	};
 
-        qcom,qcedev@fd400000 {
+	qcom_cedev: qcedev@fd400000 {
 		compatible = "qcom,qcedev";
 		reg  =  <0xfd400000 0x20000>,
 			<0xfd404000 0x8000>;
