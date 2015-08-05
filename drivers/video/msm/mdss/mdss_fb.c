@@ -305,9 +305,6 @@ static void mdss_fb_parse_dt(struct msm_fb_data_type *mfd)
 	u32 panel_xres;
 	struct platform_device *pdev = mfd->pdev;
 
-	mfd->splash_logo_enabled = of_property_read_bool(pdev->dev.of_node,
-				"qcom,mdss-fb-splash-logo-enabled");
-
 	of_property_read_u32_array(pdev->dev.of_node,
 		"qcom,mdss-fb-split", data, 2);
 
