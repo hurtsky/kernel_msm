@@ -2978,15 +2978,12 @@ struct msm_spi_platform_data * __init msm_spi_dt_to_pdata(
 			&dd->cs_gpios[2].gpio_num,       DT_OPT,  DT_GPIO, -1},
 		{"qcom,gpio-cs3",
 			&dd->cs_gpios[3].gpio_num,       DT_OPT,  DT_GPIO, -1},
-<<<<<<< HEAD
 		{"qcom,rt-priority",
 			&pdata->rt_priority,		 DT_OPT,  DT_BOOL,  0},
 		{"qcom,shared",
 			&pdata->is_shared,		 DT_OPT,  DT_BOOL,  0},
-=======
 		{"qcom,force-cs",
 			&pdata->force_cs,		 DT_OPT,  DT_BOOL,  0},
->>>>>>> eb1ec0b... spi: spi_qsd: force-cs feature device tree configuration
 		{NULL,  NULL,                            0,       0,        0},
 		};
 
