@@ -112,15 +112,9 @@ choice
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
 
-<<<<<<< HEAD
-=======
-	config DEFAULT_FIOPS
-		bool "FIOPS" if IOSCHED_FIOPS=y
-
 	config DEFAULT_SIO
 		bool "SIO" if IOSCHED_SIO=y
 
->>>>>>> 7018496... block: Add SIO, VR and ZEN I/O schedulers
 	config DEFAULT_NOOP
 		bool "No-op"
 
@@ -137,11 +131,7 @@ config DEFAULT_IOSCHED
 	default "deadline" if DEFAULT_DEADLINE
 	default "row" if DEFAULT_ROW
 	default "cfq" if DEFAULT_CFQ
-<<<<<<< HEAD
-=======
-	default "fiops" if DEFAULT_FIOPS
 	default "sio" if DEFAULT_SIO
->>>>>>> 7018496... block: Add SIO, VR and ZEN I/O schedulers
 	default "noop" if DEFAULT_NOOP
 	default "zen" if DEFAULT_ZEN
 	default "vr" if DEFAULT_VR
