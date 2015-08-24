@@ -718,18 +718,8 @@ void kgsl_cmdbatch_destroy_object(struct kref *kref);
 static inline int kgsl_process_private_get(struct kgsl_process_private *process)
 {
 	int ret = 0;
-	if (process != NULL) {
-		struct kgsl_process_private *priv;
-		mutex_lock(&kgsl_driver.process_mutex);
-		list_for_each_entry(priv, &kgsl_driver.process_list, list) {
-			if (priv == process) {
-				kref_get(&process->refcount);
-				ret = 1;
-				break;
-			}
-		}
-		mutex_unlock(&kgsl_driver.process_mutex);
-	}
+	if (process != NULL)
+		ret = kref_get_unless_zero(&process->refcount);
 	return ret;
 }
 
@@ -746,26 +736,6 @@ static inline void kgsl_cmdbatch_put(struct kgsl_cmdbatch *cmdbatch)
 {
 	if (cmdbatch)
 		kref_put(&cmdbatch->refcount, kgsl_cmdbatch_destroy_object);
-}
-
-/**
- * kgsl_sysfs_store() - parse a string from a sysfs store function
- * @buf: Incoming string to parse
- * @ptr: Pointer to an unsigned int to store the value
- */
-static inline int kgsl_sysfs_store(const char *buf, unsigned int *ptr)
-{
-	unsigned int val;
-	int rc;
-
-	rc = kstrtou32(buf, 0, &val);
-	if (rc)
-		return rc;
-
-	if (ptr)
-		*ptr = val;
-
-	return 0;
 }
 
 /**
