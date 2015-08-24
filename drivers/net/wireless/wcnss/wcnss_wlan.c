@@ -2271,46 +2271,6 @@ nv_download:
 	return;
 }
 
-static void wcnss_send_pm_config(struct work_struct *worker)
-{
-	struct smd_msg_hdr *hdr;
-	unsigned char *msg = NULL;
-	int rc, prop_len;
-	u32 *payload;
-
-	if (!of_find_property(penv->pdev->dev.of_node,
-				"qcom,cnss-pm", &prop_len))
-		return ;
-
-	msg = kmalloc((sizeof(struct smd_msg_hdr) + prop_len), GFP_KERNEL);
-	if (NULL == msg) {
-		pr_err("wcnss: %s: failed to get memory\n", __func__);
-		return;
-	}
-
-	payload = (u32 *)(msg+sizeof(struct smd_msg_hdr));
-	rc = of_property_read_u32_array(penv->pdev->dev.of_node,
-		"qcom,cnss-pm", payload, prop_len >> 2);
-
-	if (rc < 0)
-		pr_err("wcnss: property read failed\n");
-
-	pr_info("wcnss_send_pm_config, size=%d, <%d, %d, %d, %d, %d>\n",
-		prop_len, *payload, *(payload + 1), *(payload + 2),
-		*(payload + 3), *(payload + 4));
-
-	hdr = (struct smd_msg_hdr *)msg;
-	hdr->msg_type = WCNSS_PM_CONFIG_REQ;
-	hdr->msg_len = sizeof(struct smd_msg_hdr) + prop_len;
-
-	rc = wcnss_smd_tx(msg, hdr->msg_len);
-	if (rc < 0)
-		pr_err("wcnss: smd tx failed\n");
-
-	kfree(msg);
-}
-
-
 static int wcnss_pm_notify(struct notifier_block *b,
 			unsigned long event, void *p)
 {
