@@ -35,8 +35,6 @@ struct mmi_unit_info {
 	uint32_t pureason;
 };
 
-int board_lpm_mode(void);
-
 /* Function that sets the modem reset value in the SMEM location
  * where mmi_unit_info is stored.
  */
