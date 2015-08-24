@@ -356,9 +356,11 @@ struct msm_sensor_info_t {
 	enum camb_position_t position;
 };
 
+#ifdef CONFIG_MSMB_CAMERA_MOTO
 struct msm_camera_gpio_num_info {
 	uint16_t gpio_num[SENSOR_GPIO_MAX];
 };
+#endif
 
 struct camera_vreg_t {
 	const char *reg_name;
