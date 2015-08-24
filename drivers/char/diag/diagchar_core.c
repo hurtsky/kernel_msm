@@ -2163,7 +2163,6 @@ static int diagchar_setup_cdev(dev_t devno)
 {
 
 	int err;
-	struct device *dev;
 
 	cdev_init(driver->cdev, &diagcharfops);
 
