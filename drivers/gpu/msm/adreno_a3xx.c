@@ -3030,13 +3030,8 @@ static int a3xx_rb_init(struct adreno_device *adreno_dev,
 	GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x00000001);
 	GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x00000000);
 	GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x00000000);
-
-	/* Enable protected mode registers for A3XX */
-	if (adreno_is_a3xx(adreno_dev))
-		GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x20000000);
-	else
-		GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x00000000);
-
+	/* Enable protected mode */
+	GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x20000000);
 	GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x00000000);
 	GSL_RB_WRITE(rb->device, cmds, cmds_gpu, 0x00000000);
 
