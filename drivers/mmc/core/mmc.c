@@ -1735,12 +1735,9 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		} else {
 			card->ext_csd.cache_ctrl = 1;
 		}
-<<<<<<< HEAD
-=======
 	} else if (card->quirks & MMC_QUIRK_CACHE_DISABLE) {
 		pr_debug("%s: cache disabled\n", mmc_hostname(card->host));
 		card->ext_csd.cache_ctrl = 0;
->>>>>>> 0484c2e... mmc: disable cache on known-bad Micron eMMCs
 	}
 
 	if ((host->caps2 & MMC_CAP2_PACKED_WR &&
