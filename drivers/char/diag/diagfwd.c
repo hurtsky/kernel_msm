@@ -907,43 +907,6 @@ void diag_read_smd_work_fn(struct work_struct *work)
 	diag_smd_send_req(smd_info);
 }
 
-#ifdef CONFIG_DIAG_OVER_USB
-static int diag_write_to_usb(struct usb_diag_ch *ch,
-			     struct diag_request *write_ptr)
-{
-	int err = 0;
-	uint8_t retry_count, max_retries;
-
-	if (!ch || !write_ptr)
-		return -EIO;
-
-	retry_count = 0;
-	max_retries = 3;
-
-	while (retry_count < max_retries) {
-		retry_count++;
-		/* If USB is not connected, don't try to write */
-		if (!driver->usb_connected) {
-			err = -ENODEV;
-			break;
-		}
-		err = usb_diag_write(ch, write_ptr);
-		if (err == -EAGAIN) {
-			/*
-			 * USB is not configured. Wait for sometime and
-			 * try again. The value 10000 was chosen empirically
-			 * as an optimum value for USB to be configured.
-			 */
-			usleep_range(10000, 10100);
-			continue;
-		} else {
-			break;
-		}
-	}
-	return err;
-}
-#endif
-
 int diag_device_write(void *buf, int data_type, struct diag_request *write_ptr)
 {
 	int i, err = 0, index;
