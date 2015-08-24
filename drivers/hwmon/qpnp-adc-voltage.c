@@ -1581,7 +1581,8 @@ static int qpnp_vadc_suspend_noirq(struct device *dev)
 	struct qpnp_vadc_chip *vadc = dev_get_drvdata(dev);
 	u8 status = 0;
 
-	if (vadc->vadc_poll_eoc && !pmsafe) {
+	/* PM Safe might need to be added to this function */
+	if (vadc->vadc_poll_eoc) {
 		qpnp_vadc_read_reg(vadc, QPNP_VADC_STATUS1, &status);
 		status &= QPNP_VADC_STATUS1_REQ_STS_EOC_MASK;
 		pr_debug("vadc conversion status=%d\n", status);
