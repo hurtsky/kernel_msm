@@ -6099,10 +6099,10 @@ static int tapan_post_reset_cb(struct wcd9xxx *wcd9xxx)
 	int ret = 0;
 #ifndef CONFIG_SND_SOC_TPA6165A2
 	int rco_clk_rate;
+	int count;
 #endif
 	struct snd_soc_codec *codec;
 	struct tapan_priv *tapan;
-	int count;
 
 	codec = (struct snd_soc_codec *)(wcd9xxx->ssr_priv);
 	tapan = snd_soc_codec_get_drvdata(codec);
